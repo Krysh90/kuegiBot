@@ -16,6 +16,9 @@ class ExitModule:
         self.symbol= None
         pass
 
+    def settings(self):
+        pass
+
     def manage_open_order(self, order, position, bars, to_update, to_cancel, open_positions):
         pass
 
@@ -74,6 +77,9 @@ class SimpleBE(ExitModule):
     def init(self, logger,symbol):
         super().init(logger,symbol)
         self.logger.info("init BE %.2f %.2f %i" % (self.factor, self.buffer, self.atrPeriod))
+
+    def settings(self):
+        return f"SimpleBE(factor={self.factor}, buffer={self.buffer}, atrPeriod={self.atrPeriod})"
 
     def manage_open_order(self, order, position, bars, to_update, to_cancel, open_positions):
         if position is not None and self.factor > 0:
@@ -182,6 +188,9 @@ class ParaTrail(ExitModule):
         super().init(logger,symbol)
         self.logger.info("init ParaTrail %.2f %.2f %.2f %s" %
                          (self.accInit, self.accInc, self.accMax, self.resetToCurrent))
+
+    def settings(self):
+        return f"ParaTrail(accInit={self.accInit}, accInc={self.accInc}, accMax={self.accMax}, resetToCurrent={self.resetToCurrent})"
 
     def data_id(self,position:Position):
         return position.id + '_paraExit'

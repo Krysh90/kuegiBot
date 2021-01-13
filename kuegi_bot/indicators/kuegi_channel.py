@@ -39,6 +39,9 @@ class KuegiChannel(Indicator):
         self.max_dist_factor = max_dist_factor
         self.max_swing_length = max_swing_length
 
+    def settings(self):
+        return f"max_look_back={self.max_look_back}, threshold_factor={self.threshold_factor}, buffer_factor={self.buffer_factor}, max_dist_factor={self.max_dist_factor}, max_swing_length={self.max_swing_length}"
+
     def on_tick(self, bars: List[Bar]):
         # ignore first 5 bars
         for idx in range(len(bars) - self.max_look_back, -1, -1):

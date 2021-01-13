@@ -43,6 +43,9 @@ class Indicator:
         self.id = indiId
         pass
 
+    def settings(self):
+        pass
+
     def on_tick(self, bars: List[Bar]):
         pass
 
