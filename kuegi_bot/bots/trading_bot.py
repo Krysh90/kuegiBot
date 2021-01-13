@@ -42,6 +42,9 @@ class TradingBot:
         self.unaccountedPositionCoolOff = 0
         self.reset()
 
+    def settings(self):
+        pass
+
     def uid(self) -> str:
         return self.myId
 

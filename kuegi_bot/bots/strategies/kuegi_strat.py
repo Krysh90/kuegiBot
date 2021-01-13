@@ -34,6 +34,19 @@ class KuegiStrategy(ChannelStrategy):
                           self.cancel_on_filter))
         super().init(bars, account, symbol)
 
+    def settings(self):
+        exit_module_settings = []
+        for exit_module in self.exitModules:
+            exit_module_settings.append(exit_module.settings() + ')\n')
+
+        new_exit_module = ".withExitModule("
+        return f"""KuegiStrategy(max_channel_size_factor={self.max_channel_size_factor}, min_channel_size_factor={self.min_channel_size_factor},
+    entry_tightening={self.entry_tightening}, bars_till_cancel_triggered={self.bars_till_cancel_triggered}, limit_entry_offset_perc={self.limit_entry_offset_perc},
+    delayed_entry={self.delayed_entry}, delayed_cancel={self.delayed_cancel}, cancel_on_filter={self.cancel_on_filter})
+.withRM(risk_type={self.risk_type}, risk_factor={self.risk_factor}, max_risk_mul={self.max_risk_mul}, atr_factor={self.atr_factor_risk})
+.withChannel({self.channel.settings()})
+{new_exit_module}{new_exit_module.join(exit_module_settings)}"""
+
     def position_got_opened(self, position: Position, bars: List[Bar], account: Account, open_positions):
         other_id = TradingBot.get_other_direction_id(position.id)
         if other_id in open_positions.keys():

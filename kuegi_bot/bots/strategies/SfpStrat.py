@@ -44,6 +44,21 @@ class SfpStrategy(ChannelStrategy):
                           self.min_stop_diff_perc,self.ignore_on_tight_stop))
         super().init(bars, account, symbol)
 
+    def settings(self):
+        exit_module_settings = []
+        for exit_module in self.exitModules:
+            exit_module_settings.append(exit_module.settings() + ')\n')
+
+        new_exit_module = ".withExitModule("
+        return f"""SfpStrategy(tp_fac={self.tp_fac}, init_stop_type={self.init_stop_type}, stop_buffer_fac={self.stop_buffer_fac},
+    min_wick_fac={self.min_wick_fac}, min_air_wick_fac={self.min_air_wick_fac}, min_wick_to_body={self.min_wick_to_body},
+    min_swing_length={self.min_swing_length}, range_length={self.range_length}, min_rej_length={self.min_rej_length},
+    range_filter_fac={self.range_filter_fac}, close_on_opposite={self.close_on_opposite}, entries={self.entries},
+    min_stop_diff_perc={self.min_stop_diff_perc}, ignore_on_tight_stop={self.ignore_on_tight_stop})
+.withRM(risk_type={self.risk_type}, risk_factor={self.risk_factor}, max_risk_mul={self.max_risk_mul}, atr_factor={self.atr_factor_risk})
+.withChannel({self.channel.settings()})
+{new_exit_module}{new_exit_module.join(exit_module_settings)}"""
+
     def owns_signal_id(self, signalId: str):
         return signalId.startswith("sfp+")
 

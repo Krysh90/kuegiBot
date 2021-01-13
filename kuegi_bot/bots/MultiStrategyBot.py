@@ -69,6 +69,9 @@ class Strategy:
     def add_to_plot(self, fig: go.Figure, bars: List[Bar], time):
         pass
 
+    def settings(self):
+        return ""
+
     def with_telegram(self, telegram:TelegramBot):
         self.telegram= telegram
 
@@ -100,6 +103,15 @@ class MultiStrategyBot(TradingBot):
         super().__init__(logger, directionFilter)
         self.myId = "MultiStrategy"
         self.strategies: List[Strategy] = []
+
+    def settings(self):
+        strategy_settings = []
+        for strategy in self.strategies:
+            strategy_settings.append(strategy.settings())
+
+        line_break = "\n"
+        return f"""MultiStrategyBot
+{line_break.join(strategy_settings)}"""
 
     def add_strategy(self, strategy: Strategy):
         self.strategies.append(strategy)
