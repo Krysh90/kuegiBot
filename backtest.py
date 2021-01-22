@@ -146,10 +146,10 @@ bot=MultiStrategyBot(logger=logger, directionFilter= 0)
 used_bars = bars_full
 b= BackTest(bot=bot, bars=used_bars, funding=funding, symbol=symbol, market_slipage_percent=0.15).run()
 
-print(sfp_strat_values_string)
-
 # #performance chart with lots of numbers
 bot.create_performance_plot(used_bars).show()
+
+logger.info(bot.settings())
 
 # chart with signals:
 # b.prepare_plot().show()
