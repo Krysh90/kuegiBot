@@ -32,7 +32,8 @@ class Strategy:
         return sigId + "+" + timepart
 
     def prepare(self, logger, order_interface):
-        self.logger = logger
+        if self.logger is None:
+            self.logger = logger
         self.order_interface = order_interface
 
     def init(self, bars: List[Bar], account: Account, symbol: Symbol):

@@ -13,4 +13,6 @@ positionHistory/
 *.tpl.js
 volubaFE/*.json
 volubaFE/data/
-exports/
+build/
+.DS_Store
+backtests/exports/
