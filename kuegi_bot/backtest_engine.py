@@ -42,7 +42,7 @@ class BackTest(OrderInterface):
         self.handles_executions= True
         self.logger= bot.logger
         self.bot = bot
-        self.bot.prepare(SilentLogger(),self)
+        self.bot.prepare(logger=SilentLogger(), order_interface=self)
 
         self.market_slipage_percent = market_slipage_percent
         self.maker_fee = -0.00025
@@ -55,7 +55,8 @@ class BackTest(OrderInterface):
                                          takerFee=0.00075)
 
         self.account: Account = None
-        self.initialEquity = 100  # BTC
+        # self.initialEquity = 0.03  # BTC
+        self.initialEquity = 100
 
         self.hh = self.initialEquity
         self.maxDD = 0
@@ -63,6 +64,8 @@ class BackTest(OrderInterface):
         self.underwater = 0
         self.maxExposure= 0
         self.lastHHPosition = 0
+
+        self.min_balance = math.inf
 
         self.current_bars: List[Bar] = []
 
@@ -166,6 +169,7 @@ class BackTest(OrderInterface):
         self.account.open_position.quantity += amount
         volume = amount * (price if not self.symbol.isInverse else -1 / price)
         self.account.open_position.walletBalance -= math.fabs(volume) * fee
+        self.min_balance = min(self.min_balance, self.account.open_position.walletBalance)
 
         order.active = False
         order.execution_tstamp = intrabar.tstamp
@@ -302,6 +306,7 @@ class BackTest(OrderInterface):
 
         if funding != 0 and self.account.open_position.quantity != 0:
             self.account.open_position.walletBalance -= funding * self.account.open_position.quantity / bar.open
+            self.min_balance = min(self.min_balance, self.account.open_position.walletBalance)
 
 
     def run(self):
@@ -363,7 +368,7 @@ class BackTest(OrderInterface):
             total_days= (self.bars[0].tstamp - self.bars[-1].tstamp)/(60*60*24)
             rel= profit / (self.maxDD if self.maxDD > 0 else 1)
             rel_per_year = rel / (total_days/365)
-            self.logger.info("finished | closed pos: " + str(len(self.bot.position_history))
+            self.logger.info(f"finished profit: {profit:.5f} min balance: {self.min_balance:.7f}\n| closed pos: " + str(len(self.bot.position_history))
                         + " | open pos: " + str(len(self.bot.open_positions))
                         + " | profit: " + ("%.2f" % (100 * profit / self.initialEquity))
                         + " | HH: " + ("%.2f" % (100 * (self.hh / self.initialEquity - 1)))
@@ -372,6 +377,7 @@ class BackTest(OrderInterface):
                         + " | rel: " + ("%.2f" % (rel_per_year))
                         + " | UW days: " + ("%.1f" % (self.max_underwater / uw_updates_per_day))
                         + " | pos days: " + ("%.1f/%.1f/%.1f" % (minDays,daysInPos,maxDays))
+                        + f" | days run: {total_days:.2f}"
                         )
         else:
             self.logger.info("finished with no trades")

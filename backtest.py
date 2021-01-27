@@ -1,7 +1,7 @@
 import logging
 import random
 
-from kuegi_bot.backtest_engine import BackTest
+from kuegi_bot.backtest_engine import BackTest, SilentLogger
 from kuegi_bot.bots.MultiStrategyBot import MultiStrategyBot
 from kuegi_bot.bots.strategies.MACross import MACross
 from kuegi_bot.bots.strategies.entry_filters import DayOfWeekFilter
@@ -11,7 +11,7 @@ from kuegi_bot.bots.strategies.kuegi_strat import KuegiStrategy
 from kuegi_bot.utils.helper import load_bars, prepare_plot, load_funding
 from kuegi_bot.utils import log
 from kuegi_bot.indicators.kuegi_channel import KuegiChannel
-from kuegi_bot.utils.trading_classes import Symbol
+from kuegi_bot.utils.trading_classes import Account, Symbol
 
 logger = log.setup_custom_logger(log_level=logging.INFO)
 
@@ -63,7 +63,7 @@ def runOpti(bars,funding,min,max,steps,symbol= None, randomCount= -1):
             msg += str(i) + " "
         logger.info(msg)
         bot = MultiStrategyBot(logger=logger, directionFilter=0)
-        bot.add_strategy(KuegiStrategy()
+        bot.add_strategy(KuegiStrategy(...)
                          )
         BackTest(bot, bars= bars,funding=funding, symbol=symbol).run()
 
@@ -125,10 +125,34 @@ elif pair == "BTCUSDT":
 #for binance_f
 #symbol=Symbol(symbol="BTCUSDT", isInverse=False, tickSize=0.001, lotSize=0.00001, makerFee=0.02, takerFee=0.04, quantityPrecision=5)
 
+
+# runs for a few seconds
+# bars_b = load_bars(30 * 3, 240, 0, 'bybit', pair)
+# bars_b = load_bars(30 * 9, 240, 0, 'bybit', pair)
+# runs for 6 minutes
+bars_b = load_bars(30 * 22, 240, 0, 'bybit', pair)
+
 bars_full= bars_b
 oos_cut=int(len(bars_full)/4)
 bars= bars_full[oos_cut:]
 bars_oos= bars_full[:oos_cut]
+
+account = Account()
+
+bot=MultiStrategyBot(logger=logger, directionFilter= 0)
+
+# add values here
+
+used_bars = bars_full
+b= BackTest(bot=bot, bars=used_bars, funding=funding, symbol=symbol, market_slipage_percent=0.15).run()
+
+print(sfp_strat_values_string)
+
+# #performance chart with lots of numbers
+bot.create_performance_plot(used_bars).show()
+
+# chart with signals:
+# b.prepare_plot().show()
 
 
 '''
@@ -152,22 +176,22 @@ p.print_callers('<functionName>')
 '''
 
 '''
-runOpti(bars_oos, funding=funding,
-        min=   [-5,20],
-        max=   [5,27],
-        steps= [1,1],
+runOpti(bars, funding=funding,
+        min=   [5,1,13],
+        max=   [5,1,16],
+        steps= [1,1,1],
         randomCount=-1,
         symbol=symbol)
 
 #'''
 
-#'''
+'''
 
 bot=MultiStrategyBot(logger=logger, directionFilter= 0)
-bot.add_strategy(KuegiStrategy()
+bot.add_strategy(KuegiStrategy(...
                  )
 
-bot.add_strategy(SfpStrategy()
+bot.add_strategy(SfpStrategy(...
                  )
 
 b= BackTest(bot, bars_full, funding=funding, symbol=symbol,market_slipage_percent=0.15).run()

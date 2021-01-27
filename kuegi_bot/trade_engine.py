@@ -6,7 +6,6 @@ import time
 
 import plotly.graph_objects as go
 
-from kuegi_bot.exchanges.binance_future.binancef_interface import BinanceFuturesInterface
 from kuegi_bot.exchanges.bitmex.bitmex_interface import BitmexInterface
 from kuegi_bot.exchanges.bybit.bybit_interface import ByBitInterface
 from kuegi_bot.exchanges.bybit_linear.bybitlinear_interface import ByBitLinearInterface
