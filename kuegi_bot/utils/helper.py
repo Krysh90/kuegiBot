@@ -54,7 +54,7 @@ def history_file_name(index, exchange,symbol='') :
     return 'history/' + exchange + '/' + symbol + 'M1_' + str(index) + '.json'
 
 known_history_files= {
-    "bybit_BTCUSD": 22,
+    "bybit_BTCUSD": 23,
     "bybit_ETHUSD": 20,
     "bybit_XRPUSD": 0,
     "bybit-linear_BTCUSDT":9
@@ -107,7 +107,7 @@ def load_bars(days_in_history, wanted_tf, start_offset_minutes=0,exchange='bybit
     return process_low_tf_bars(subbars, wanted_tf, start_offset_minutes)
 
 
-def prepare_plot(bars, indis: List[Indicator]):
+def prepare_plot(bars, indis: List[Indicator], pair):
     logger.info("calculating " + str(len(indis)) + " indicators on " + str(len(bars)) + " bars")
     for indi in indis:
         indi.on_tick(bars)
@@ -120,7 +120,7 @@ def prepare_plot(bars, indis: List[Indicator]):
     close = list(map(lambda b: b.close, bars))
 
     logger.info("creating plot")
-    fig = go.Figure(data=[go.Candlestick(x=time, open=open, high=high, low=low, close=close, name="XBTUSD")])
+    fig = go.Figure(data=[go.Candlestick(x=time, open=open, high=high, low=low, close=close, name=pair)])
 
     logger.info("adding indicators")
     for indi in indis:

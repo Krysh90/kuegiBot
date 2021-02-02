@@ -8,6 +8,7 @@ from kuegi_bot.bots.strategies.entry_filters import DayOfWeekFilter
 from kuegi_bot.bots.strategies.SfpStrat import SfpStrategy
 from kuegi_bot.bots.strategies.exit_modules import SimpleBE, ParaTrail, MaxSLDiff
 from kuegi_bot.bots.strategies.kuegi_strat import KuegiStrategy
+from kuegi_bot.indicators.RSI import RSI
 from kuegi_bot.utils.helper import load_bars, prepare_plot, load_funding
 from kuegi_bot.utils import log
 from kuegi_bot.indicators.kuegi_channel import KuegiChannel
@@ -139,17 +140,19 @@ bars_oos= bars_full[:oos_cut]
 
 account = Account()
 
-bot=MultiStrategyBot(logger=logger, directionFilter= 0)
+# bot=MultiStrategyBot(logger=logger, directionFilter= 0)
 
 # add values here
 
 used_bars = bars_full
-b= BackTest(bot=bot, bars=used_bars, funding=funding, symbol=symbol, market_slipage_percent=0.15).run()
+# b= BackTest(bot=bot, bars=used_bars, funding=funding, symbol=symbol, market_slipage_percent=0.15).run()
 
 # #performance chart with lots of numbers
-bot.create_performance_plot(used_bars).show()
+# bot.create_performance_plot(used_bars).show()
 
-logger.info(bot.settings())
+# logger.info(bot.settings())
+
+prepare_plot(used_bars, [RSI()], pair)
 
 # chart with signals:
 # b.prepare_plot().show()
